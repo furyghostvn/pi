@@ -1,0 +1,33 @@
+name: Build macOS App
+on: [workflow_dispatch, push]
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller PySide6 stellar-sdk requests
+      - run: |
+          if [ -f icon.icns ]; then
+            echo "icon.icns exists"
+          elif [ -f icon.ico ]; then
+            sips -s format icns icon.ico --out icon.icns
+          fi
+      - run: |
+          pyinstaller --noconfirm --clean --onefile --windowed \
+            --name "Auto Claim Pi" \
+            --icon "icon.icns" \
+            --hidden-import _cffi_backend \
+            --collect-all nacl \
+            --collect-all stellar_sdk \
+            Auto_ClaimPi_V0_no_tg_sheet.py
+      - run: |
+          cd dist && /usr/bin/zip -r AutoClaimPi_macOS.zip "Auto Claim Pi.app"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: AutoClaimPi_macOS
+          path: dist/AutoClaimPi_macOS.zip
