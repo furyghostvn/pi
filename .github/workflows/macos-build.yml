@@ -24,7 +24,7 @@ jobs:
             --hidden-import _cffi_backend \
             --collect-all nacl \
             --collect-all stellar_sdk \
-            Auto_ClaimPi_V0_no_tg_sheet.py
+            Pi.py
       - run: |
           cd dist && /usr/bin/zip -r AutoClaimPi_macOS.zip "Auto Claim Pi.app"
       - uses: actions/upload-artifact@v4
